@@ -1,178 +1,164 @@
 <script setup lang='ts'>
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import 'primevue/resources/primevue.min.css'
-import 'primeicons/primeicons.css'
-import { useOrbsStore } from '~/stores/orbs' // Adjust the path according to your project structure
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+import 'primevue/resources/primevue.min.css';
+import 'primeicons/primeicons.css';
+import { useOrbsStore } from '~/stores/orbs'; // Adjust the path according to your project structure
 
-const orbsStore = useOrbsStore()
+const orbsStore = useOrbsStore();
 
-const progress = ref(0)
-const buttonAnimating = ref(false)
-const buttonPressed = ref(false)
-const isManualMode = ref(false)
-let intervalId = null
+const progress = ref(0);
+const fillCounter = ref(0);
+const buttonAnimating = ref(false);
+const buttonPressed = ref(false);
+const isManualMode = ref(false);
+let intervalId = null;
 
-function handleKeyDown(event) {
-  if (isManualMode.value && event.code === 'Space' && !buttonPressed.value) {
-    buttonPressed.value = true
-    triggerButtonAnimation(true)
+const handleKeyDown = (event) => {
+  if (event.code === 'Space' && !buttonPressed.value) {
+    buttonPressed.value = true;
+    triggerButtonAnimation(true);
   }
-}
+};
 
-function handleKeyUp(event) {
-  if (isManualMode.value && event.code === 'Space') {
-    buttonPressed.value = false
-    triggerButtonAnimation(false)
+const handleKeyUp = (event) => {
+  if (event.code === 'Space') {
+    buttonPressed.value = false;
+    triggerButtonAnimation(false);
   }
-}
+};
 
-function handleMouseDown() {
-  if (isManualMode.value) {
-    buttonPressed.value = true
-    triggerButtonAnimation(true)
-  }
-}
+const handleMouseDown = () => {
+  buttonPressed.value = true;
+  triggerButtonAnimation(true);
+};
 
-function handleMouseUp() {
-  if (isManualMode.value) {
-    buttonPressed.value = false
-    triggerButtonAnimation(false)
-  }
-}
+const handleMouseUp = () => {
+  buttonPressed.value = false;
+  triggerButtonAnimation(false);
+};
 
-function resetProgress() {
-  progress.value = 0
+const resetProgress = () => {
+  progress.value = 0;
   setTimeout(() => {
-    if (!isManualMode.value)
-      startAutoProgress()
-  }, 100) // Brief delay before restarting progress
-}
+    if (!isManualMode.value) {
+      startAutoProgress();
+    }
+  }, 100); // Brief delay before restarting progress
+};
 
-function startAutoProgress() {
-  const autoInterval = orbsStore.chargeSpeed / 1000 // Interval for auto charging
+const startAutoProgress = () => {
   intervalId = setInterval(() => {
     if (progress.value < 100) {
-      progress.value += 0.1 // Smaller increment for smoother animation
+      progress.value += 0.1; // Smaller increment for smoother animation
+    } else {
+      fillCounter.value += 1;
+      clearInterval(intervalId);
+      resetProgress();
     }
-    else {
-      orbsStore.amountOfCharges += 1
-      clearInterval(intervalId)
-      resetProgress()
-    }
-  }, autoInterval) // Interval for smoother updates
-}
+  }, 10); // Shorter interval for smoother updates
+};
 
-function stopAutoProgress() {
+const stopAutoProgress = () => {
   if (intervalId) {
-    clearInterval(intervalId)
-    intervalId = null
+    clearInterval(intervalId);
+    intervalId = null;
   }
-}
+};
 
 onMounted(async () => {
-  orbsStore.initData()
-  startAutoProgress()
+  orbsStore.initData();
+  startAutoProgress();
 
-  window.addEventListener('keydown', handleKeyDown)
-  window.addEventListener('keyup', handleKeyUp)
-  window.addEventListener('mousedown', handleMouseDown)
-  window.addEventListener('mouseup', handleMouseUp)
-})
+  window.addEventListener('keydown', handleKeyDown);
+  window.addEventListener('keyup', handleKeyUp);
+  window.addEventListener('mousedown', handleMouseDown);
+  window.addEventListener('mouseup', handleMouseUp);
+});
 
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleKeyDown)
-  window.removeEventListener('keyup', handleKeyUp)
-  window.removeEventListener('mousedown', handleMouseDown)
-  window.removeEventListener('mouseup', handleMouseUp)
-  stopAutoProgress()
-})
+  window.removeEventListener('keydown', handleKeyDown);
+  window.removeEventListener('keyup', handleKeyUp);
+  window.removeEventListener('mousedown', handleMouseDown);
+  window.removeEventListener('mouseup', handleMouseUp);
+  stopAutoProgress();
+});
 
 watch(isManualMode, (newValue) => {
   if (newValue) {
     // Manual mode activated, reset progress and stop automatic progress
-    stopAutoProgress()
-    progress.value = 0
+    stopAutoProgress();
+    progress.value = 0;
+  } else {
+    // Automatic mode activated, start auto progress
+    resetProgress();
   }
-  else {
-    // Automatic mode activated, start auto progress and reset manual speed
-    orbsStore.decreaseManualSpeed()
-    resetProgress()
-  }
-})
+});
 
-function buyResource(resourceId: any) {
+const buyResource = (resourceId: any) => {
   // Implement buy logic here
-  console.log(`Buying resource with ID: ${resourceId}`)
-}
+  console.log(`Buying resource with ID: ${resourceId}`);
+};
 
-function triggerButtonAnimation(isPressing) {
+const triggerButtonAnimation = (isPressing) => {
   if (isPressing) {
-    buttonAnimating.value = true
+    buttonAnimating.value = true;
     if (isManualMode.value) {
-      const manualInterval = orbsStore.manualChargeSpeed / 1000 // Interval for manual charging
-      const manualCharging = setInterval(() => {
+      const manualInterval = setInterval(() => {
         if (buttonPressed.value) {
           if (progress.value < 100) {
-            progress.value += 0.1 // Increase the progress manually
+            progress.value += 0.1; // Increase the progress manually
+          } else {
+            fillCounter.value += 1;
+            progress.value = 0; // Reset the progress when it reaches 100%
           }
-          else {
-            orbsStore.amountOfCharges += 1
-            progress.value = 0 // Reset the progress when it reaches 100%
-            orbsStore.increaseManualSpeed()
-          }
+        } else {
+          clearInterval(manualInterval);
         }
-        else {
-          clearInterval(manualCharging)
-        }
-      }, manualInterval) // Short interval for smooth progress
+      }, 10); // Short interval for smooth progress
     }
-  }
-  else {
+  } else {
     setTimeout(() => {
-      buttonAnimating.value = false
-      if (!buttonPressed.value)
-        orbsStore.decreaseManualSpeed() // Reset manual speed when stopping charge
-    }, 250) // Duration of the animation for release
+      buttonAnimating.value = false;
+    }, 250); // Duration of the animation for release
   }
-}
+};
 </script>
+
+
 
 <template>
   <div class="card grid grid-cols-12 h-[80vh] p-4 items-center">
     <!-- Progress Bar with Checkbox and Counter -->
     <div class="col-span-3 flex items-center">
-      <input id="manualMode" v-model="isManualMode" type="checkbox">
+      <input type="checkbox" id="manualMode" v-model="isManualMode" />
       <label for="manualMode" class="ml-2">Manual Mode</label>
     </div>
     <div class="col-span-6 w-full mb-4">
       <div class="progress-bar-container">
         <div class="progress-bar-fill-wrapper">
           <div
-            class="progress-bar-fill"
-            :style="{ width: `${progress}%` }"
-          />
+              class="progress-bar-fill"
+              :style="{ width: progress + '%' }"
+          ></div>
         </div>
         <div class="progress-bar-counter">
-          {{ orbsStore.amountOfCharges }}
-        </div>
-        <div class="progress-bar-speed">
-          {{ isManualMode.value ? `Manual Speed: ${(orbsStore.manualChargeSpeed / 1000).toFixed(2)}s` : `Auto Speed: ${(orbsStore.chargeSpeed / 1000).toFixed(2)}s` }}
+          {{ fillCounter }}
         </div>
       </div>
     </div>
-    <div class="col-span-3" />
+    <div class="col-span-3"></div>
 
     <!-- Left Resource List -->
     <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
       <div
-        v-for="resource in orbsStore.dust"
-        :key="resource.id"
-        class="resource-item flex items-center mb-2"
+          v-for="resource in orbsStore.dust"
+          :key="resource.id"
+          class="resource-item flex items-center mb-2"
       >
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
-        <img src="https://picsum.photos/200/300" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-        <button class="ml-2 p-button p-component" @click="buyResource(resource.id)">
+        <img :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
+        <button @click="buyResource(resource.id)" class="ml-2 p-button p-component">
           Buy
         </button>
       </div>
@@ -182,24 +168,24 @@ function triggerButtonAnimation(isPressing) {
     <div class="game-container col-span-8 flex justify-center items-center h-full bg-surface-card">
       <div class="sprite-box flex justify-center items-center w-1/2 h-3/5 border-2 border-black">
         <img
-          src="https://picsum.photos/200/300"
-          alt="Borg Infested Teleporter"
-          class="sprite-image w-4/5 h-4/5 object-contain"
-        >
+            src="/assets/art/teleport_void.png"
+            alt="Borg Infested Teleporter"
+            class="sprite-image w-4/5 h-4/5 object-contain"
+        />
       </div>
     </div>
 
     <!-- Right Resource List -->
     <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
       <div
-        v-for="resource in orbsStore.orbs"
-        :key="resource.id"
-        class="resource-item flex items-center mb-2"
+          v-for="resource in orbsStore.orbs"
+          :key="resource.id"
+          class="resource-item flex items-center mb-2"
       >
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
-        <img src="https://picsum.photos/200/300" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-        <button class="ml-2 p-button p-component" @click="buyResource(resource.id)">
+        <img :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
+        <button @click="buyResource(resource.id)" class="ml-2 p-button p-component">
           Buy
         </button>
       </div>
@@ -208,14 +194,20 @@ function triggerButtonAnimation(isPressing) {
     <!-- Space Button -->
     <div class="col-span-12 flex justify-center mt-4">
       <div
-        v-if="isManualMode"
-        class="button" :class="[{ 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
-        @mousedown="handleMouseDown"
-        @mouseup="handleMouseUp"
-      />
+          :class="['button', { 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
+          @mousedown="handleMouseDown"
+          @mouseup="handleMouseUp"
+      ></div>
     </div>
   </div>
 </template>
+
+
+
+
+
+
+
 
 <style scoped>
 .bg-primary-custom {
@@ -251,37 +243,28 @@ function triggerButtonAnimation(isPressing) {
   color: #000; /* Text color for the counter */
 }
 
-.progress-bar-speed {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  color: #000; /* Text color for the speed */
-  font-weight: bold;
-}
-
 @keyframes buttonPress {
   0% {
-    background-image: url('https://picsum.photos/200/300');
+    background-image: url('@/assets/art/tile120.png');
   }
   100% {
-    background-image: url('https://picsum.photos/200/300');
+    background-image: url('@/assets/art/tile122.png');
   }
 }
 
 @keyframes buttonRelease {
   0% {
-    background-image: url('https://picsum.photos/200/300');
+    background-image: url('@/assets/art/tile122.png');
   }
   100% {
-    background-image: url('https://picsum.photos/200/300');
+    background-image: url('@/assets/art/tile120.png');
   }
 }
 
 .button {
   width: 128px; /* Adjust size as needed */
   height: 64px; /* Adjust size as needed */
-  background-image: url('https://picsum.photos/200/300'); /* Initial background */
+  background-image: url('@/assets/art/tile120.png'); /* Initial background */
   background-size: cover;
   background-position: center;
 }
@@ -294,3 +277,8 @@ function triggerButtonAnimation(isPressing) {
   animation: buttonRelease 0.05s steps(2) forwards;
 }
 </style>
+
+
+
+
+
