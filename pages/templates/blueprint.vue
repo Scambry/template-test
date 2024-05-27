@@ -11,7 +11,6 @@ const buttonAnimating = ref(false)
 const buttonPressed = ref(false)
 const isManualMode = ref(false)
 let intervalId = null
-const maxManualChargeSpeedIncrease = 0.7 // Maximum speed increase to 30%
 
 function handleKeyDown(event) {
   if (isManualMode.value && event.code === 'Space' && !buttonPressed.value) {
@@ -96,7 +95,7 @@ watch(isManualMode, (newValue) => {
   }
   else {
     // Automatic mode activated, start auto progress and reset manual speed
-    orbsStore.manualChargeSpeed = orbsStore.chargeSpeed
+    orbsStore.decreaseManualSpeed()
     resetProgress()
   }
 })
@@ -119,8 +118,7 @@ function triggerButtonAnimation(isPressing) {
           else {
             orbsStore.amountOfCharges += 1
             progress.value = 0 // Reset the progress when it reaches 100%
-            if (orbsStore.manualChargeSpeed > orbsStore.chargeSpeed * (1 - maxManualChargeSpeedIncrease))
-              orbsStore.manualChargeSpeed -= orbsStore.chargeSpeed * 0.1 // Increase speed by 10%
+            orbsStore.increaseManualSpeed()
           }
         }
         else {
@@ -133,7 +131,7 @@ function triggerButtonAnimation(isPressing) {
     setTimeout(() => {
       buttonAnimating.value = false
       if (!buttonPressed.value)
-        orbsStore.manualChargeSpeed = orbsStore.chargeSpeed // Reset manual speed when stopping charge
+        orbsStore.decreaseManualSpeed() // Reset manual speed when stopping charge
     }, 250) // Duration of the animation for release
   }
 }
@@ -158,7 +156,7 @@ function triggerButtonAnimation(isPressing) {
           {{ orbsStore.amountOfCharges }}
         </div>
         <div class="progress-bar-speed">
-          {{ isManualMode ? `Manual Speed: ${(orbsStore.manualChargeSpeed / 1000).toFixed(2)}s` : `Auto Speed: ${(orbsStore.chargeSpeed / 1000).toFixed(2)}s` }}
+          {{ isManualMode.value ? `Manual Speed: ${(orbsStore.manualChargeSpeed / 1000).toFixed(2)}s` : `Auto Speed: ${(orbsStore.chargeSpeed / 1000).toFixed(2)}s` }}
         </div>
       </div>
     </div>

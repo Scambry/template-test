@@ -51,5 +51,14 @@ export const useOrbsStore = defineStore('orbs', () => {
       resource.count--
   }
 
-  return { dust, orbs, amountOfCharges, chargeSpeed, manualChargeSpeed, getResource, incrementResource, decrementResource, initData }
+  const increaseManualSpeed = () => {
+    if (manualChargeSpeed.value > chargeSpeed.value * 0.7)
+      manualChargeSpeed.value -= chargeSpeed.value * 0.1
+  }
+
+  const decreaseManualSpeed = () => {
+    manualChargeSpeed.value = chargeSpeed.value
+  }
+
+  return { dust, orbs, amountOfCharges, chargeSpeed, manualChargeSpeed, getResource, incrementResource, decrementResource, increaseManualSpeed, decreaseManualSpeed, initData }
 })
