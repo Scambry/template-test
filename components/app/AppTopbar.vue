@@ -65,7 +65,7 @@ function redirectToGithub() {
 <template>
   <div class="layout-topbar">
     <NuxtLink to="/" class="layout-topbar-logo">
-      <span style="color: var(--primary-color)">Nuxt3 PrimeVue Starter</span>
+      <span style="color: var(--primary-color)">Teleport</span>
     </NuxtLink>
 
     <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
@@ -77,21 +77,11 @@ function redirectToGithub() {
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
-      <button class="p-link layout-topbar-button" @click="onTopBarMenuButton()">
-        <i class="pi pi-calendar" />
-        <span>Calendar</span>
-      </button>
-      <button class="p-link layout-topbar-button" @click="onTopBarMenuButton()">
-        <i class="pi pi-user" />
-        <span>Profile</span>
-      </button>
+
+
       <button class="p-link layout-topbar-button" @click="toggle">
         <i class="pi pi-cog" />
         <span>Settings</span>
-      </button>
-      <button class="p-link layout-topbar-button" @click="redirectToGithub">
-        <i class="pi pi-github" />
-        <span>Github</span>
       </button>
     </div>
     <client-only>
