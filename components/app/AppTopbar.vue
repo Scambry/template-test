@@ -65,7 +65,7 @@ function redirectToGithub() {
 <template>
   <div class="layout-topbar">
     <NuxtLink to="/" class="layout-topbar-logo">
-      <span style="color: var(--primary-color)">Teleport</span>
+      <span style="color: var(--primary-color)">Idle Game</span>
     </NuxtLink>
 
     <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
