@@ -101,6 +101,11 @@ watch(orbsStore.isManual, (newValue) => {
     <div class="col-span-12 flex justify-center mt-4">
       <input id="manualMode" v-model="orbsStore.isManual" type="checkbox">
       <label for="manualMode" class="ml-2">Manual Mode</label>
+
+    </div>
+    <div class="col-span-12 flex justify-center mt-4">
+      <Button label="Delete Storage" @click="orbsStore.clearLocalStorage" @touchstart="orbsStore.clearLocalStorage()" />
+
     </div>
 
     <!-- Left Resource List -->
@@ -113,21 +118,21 @@ watch(orbsStore.isManual, (newValue) => {
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
         <img draggable="false" :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-        <Button :label="resource.cost" class="ml-2 p-button-rounded w-[4rem] h-[2rem]" @click="orbsStore.buyResource(resource.id, orbsStore.dust)" />      </div>
+        <Button :label="String(resource.cost)" class="ml-2 p-button md:w-[4rem] md:h-[2rem] w-[2rem] h-[1.5rem] md:text-base text-sm md:text-center text-center" @click="orbsStore.buyResource(resource.id, orbsStore.dust)" />
+      </div>
     </div>
 
     <!-- Game Container -->
     <div class="game-container col-span-8 flex justify-center items-center h-full bg-surface-card">
       <div class="sprite-box flex justify-center items-center w-1/2 h-3/5 border-2 border-black">
         <img
-            draggable="false"
+          draggable="false"
           src="/assets/art/teleport_void.png"
           alt="Borg Infested Teleporter"
           class="sprite-image w-4/5 h-4/5 object-contain"
         >
       </div>
     </div>
-
     <!-- Right Resource List -->
     <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
       <div
@@ -138,8 +143,7 @@ watch(orbsStore.isManual, (newValue) => {
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
         <img draggable="false" :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-        <Button :label="resource.cost" class="ml-2 p-button-rounded w-[4rem] h-[2rem]" @click="orbsStore.buyResource(resource.id, orbsStore.orbs)" />
-
+        <Button :label="String(resource.cost)" class="ml-2 p-button md:w-[4rem] md:h-[2rem] w-[2rem] h-[1.5rem] md:text-base text-sm md:text-center text-center" @click="orbsStore.buyResource(resource.id, orbsStore.orbs)" />
       </div>
     </div>
     <!-- Space Button -->
@@ -150,6 +154,8 @@ watch(orbsStore.isManual, (newValue) => {
           class="button" :class="[{ 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
           @mousedown="handleMouseDown"
           @mouseup="handleMouseUp"
+          @touchstart="handleMouseDown"
+          @touchend="handleMouseUp"
         />
       </div>
     </div>

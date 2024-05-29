@@ -25,7 +25,7 @@ const defaultDust = [
   { id: 2, name: 'Blue', cost: 10, count: 0, icon: blueDustIcon },
   { id: 3, name: 'Green', cost: 25, count: 0, icon: greenDustIcon },
   { id: 4, name: 'Orange', cost: 50, count: 0, icon: orangeDustIcon },
-  { id: 5, name: 'Purple', cost: 100, count: 0, icon: purpleDustIcon },
+  { id: 5, name: 'Purple', cost: 75, count: 0, icon: purpleDustIcon },
 ]
 
 const defaultOrbs = [
@@ -33,7 +33,7 @@ const defaultOrbs = [
   { id: 2, name: 'Blue', cost: 10, count: 0, icon: blueOrbIcon },
   { id: 3, name: 'Green', cost: 25, count: 0, icon: greenOrbIcon },
   { id: 4, name: 'Orange', cost: 50, count: 0, icon: orangeOrbIcon },
-  { id: 5, name: 'Purple', cost: 100, count: 0, icon: purpleOrbIcon },
+  { id: 5, name: 'Purple', cost: 75, count: 0, icon: purpleOrbIcon },
 ]
 
 export const useOrbsStore = defineStore('orbs', () => {
@@ -76,8 +76,8 @@ export const useOrbsStore = defineStore('orbs', () => {
       const savedTickTime = localStorage.getItem('tickTime')
       const savedIsManual = localStorage.getItem('isManual')
 
-      dust.value = savedDust ? JSON.parse(savedDust) : []
-      orbs.value = savedOrbs ? JSON.parse(savedOrbs) : []
+      dust.value = savedDust ? JSON.parse(savedDust) : defaultDust
+      orbs.value = savedOrbs ? JSON.parse(savedOrbs) : defaultOrbs
       progress.value = savedProgress !== null ? JSON.parse(savedProgress) : 0
       fillCounter.value = savedFillCounter !== null ? JSON.parse(savedFillCounter) : 0
       tickTime.value = savedTickTime !== null ? JSON.parse(savedTickTime) : initialTickTime
@@ -94,12 +94,28 @@ export const useOrbsStore = defineStore('orbs', () => {
     }
   }
 
-  const initData = () => {
-    if (dust.value.length === 0)
+  const clearLocalStorage = () => {
+    if (process.client) {
+      localStorage.clear()
+      console.log('Local storage cleared')
       dust.value = defaultDust
-
-    if (orbs.value.length === 0)
       orbs.value = defaultOrbs
+      progress.value = 0
+      fillCounter.value = 0
+      tickTime.value = initialTickTime
+      isManual.value = false
+      saveState()
+    }
+  }
+
+  const initData = () => {
+    if (dust.value.length === 0) {
+      dust.value = defaultDust
+    }
+
+    if (orbs.value.length === 0) {
+      orbs.value = defaultOrbs
+    }
 
     saveState() // Save the initialized data to localStorage
   }
@@ -236,5 +252,6 @@ export const useOrbsStore = defineStore('orbs', () => {
     completeTick,
     tickTimeSeconds,
     reductionSeconds,
+    clearLocalStorage,
   }
 })
