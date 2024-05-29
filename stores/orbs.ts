@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref, watch, computed } from 'vue';
+import { ref, computed } from 'vue';
 import blackDustIcon from '~/assets/art/black_dust.png';
 import blueDustIcon from '~/assets/art/blue_dust.png';
 import greenDustIcon from '~/assets/art/green_dust.png';
@@ -98,7 +98,7 @@ export const useOrbsStore = defineStore('orbs', () => {
 
   const startManualProgress = () => {
     if (manualIntervalId === null) {
-      const increment = 100 / (tickTime.value / 100);
+      const increment = 100 / (tickTime.value / 100); // Calculate increment to complete in tickTime
       manualIntervalId = window.setInterval(() => {
         if (progress.value < 100) {
           progress.value += increment;

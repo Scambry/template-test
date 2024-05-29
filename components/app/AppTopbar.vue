@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useOrbsStore } from '~/stores/orbs' // Adjust the path according to your project structure
 import { useLayout } from '~/composables/layout'
 import { useThemeStore } from '~/stores/theme' // Adjust the path according to your project structure
+import Badge from 'primevue/badge';
 
 defineEmits(['menuToggle'])
 const { onMenuToggle } = useLayout()
@@ -66,26 +67,13 @@ function toggle(event: any) {
 <template>
   <div class="layout-topbar">
     <NuxtLink to="/" class="layout-topbar-logo">
-      <span style="color: var(--primary-color)">Idle Game</span>
+      <span class="ml-1 mr-6" style="color: var(--primary-color)">Idle Game</span>
+      <Badge :value="orbsStore.fillCounter" style="background-color: var(--primary-color)" />
     </NuxtLink>
 
     <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
       <i class="pi pi-bars" />
     </button>
-    <div class="layout-topbar-center">
-      <!-- Display fillCounter -->
-      <div class="fill-counter">
-        {{ orbsStore.fillCounter }}
-      </div>
-      <!-- Mini Progress Bar -->
-      <div class="mini-progress-bar">
-        <div
-            class="mini-progress-bar-fill"
-            :style="{ width: orbsStore.progress + '%' }"
-        ></div>
-      </div>
-    </div>
-
 
     <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
       <i class="pi pi-ellipsis-v" />

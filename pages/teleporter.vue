@@ -57,6 +57,7 @@ const triggerButtonAnimation = (isPressing) => {
 };
 
 onMounted(() => {
+  orbsStore.initData(); // Ensure initData is called to initialize the resources
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keyup', handleKeyUp);
 });
@@ -78,11 +79,8 @@ watch(orbsStore.isManual, (newValue) => {
 
 <template>
   <div class="card grid grid-cols-12 h-[80vh] p-4 items-center">
-    <!-- Progress Bar with Checkbox and Counter -->
-    <div class="col-span-3 flex items-center">
-      <input type="checkbox" id="manualMode" v-model="orbsStore.isManual" />
-      <label for="manualMode" class="ml-2">Manual Mode</label>
-    </div>
+    <!-- Progress Bar with Counter and Time -->
+    <div class="col-span-3"></div>
     <div class="col-span-6 w-full mb-4">
       <div class="progress-bar-container">
         <div class="progress-bar-fill-wrapper">
@@ -100,6 +98,14 @@ watch(orbsStore.isManual, (newValue) => {
       </div>
     </div>
     <div class="col-span-3"></div>
+
+    <!-- Manual Mode Checkbox -->
+    <div class="col-span-12 flex justify-center mt-4">
+      <input type="checkbox" id="manualMode" v-model="orbsStore.isManual" />
+      <label for="manualMode" class="ml-2">Manual Mode</label>
+    </div>
+
+
 
     <!-- Left Resource List -->
     <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
@@ -143,15 +149,16 @@ watch(orbsStore.isManual, (newValue) => {
         </button>
       </div>
     </div>
-
     <!-- Space Button -->
     <div class="col-span-12 flex justify-center mt-4">
-      <div
-          v-if="orbsStore.isManual"
-          :class="['button', { 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
-          @mousedown="handleMouseDown"
-          @mouseup="handleMouseUp"
-      ></div>
+      <div class="button-container">
+        <div
+            v-if="orbsStore.isManual"
+            :class="['button', { 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
+            @mousedown="handleMouseDown"
+            @mouseup="handleMouseUp"
+        ></div>
+      </div>
     </div>
   </div>
 </template>
@@ -200,6 +207,11 @@ watch(orbsStore.isManual, (newValue) => {
   color: #000; /* Text color for the time display */
   text-align: center;
   white-space: nowrap;
+}
+
+.button-container {
+  width: 128px; /* Fixed width to prevent layout shift */
+  height: 64px; /* Fixed height to prevent layout shift */
 }
 
 @keyframes buttonPress {
