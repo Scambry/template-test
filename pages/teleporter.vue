@@ -6,93 +6,40 @@ import { useOrbsStore } from '~/stores/orbs'; // Adjust the path according to yo
 
 const orbsStore = useOrbsStore();
 
-const progress = ref(0);
-const fillCounter = ref(0);
 const buttonAnimating = ref(false);
 const buttonPressed = ref(false);
-const isManualMode = ref(false);
-let intervalId = null;
 
 const handleKeyDown = (event) => {
-  if (event.code === 'Space' && !buttonPressed.value) {
+  if (event.code === 'Space' && !buttonPressed.value && orbsStore.isManual) {
     buttonPressed.value = true;
     triggerButtonAnimation(true);
+    orbsStore.startManualProgress();
   }
 };
 
 const handleKeyUp = (event) => {
-  if (event.code === 'Space') {
+  if (event.code === 'Space' && orbsStore.isManual) {
     buttonPressed.value = false;
     triggerButtonAnimation(false);
+    orbsStore.stopManualProgress();
   }
 };
 
 const handleMouseDown = () => {
-  buttonPressed.value = true;
-  triggerButtonAnimation(true);
+  if (orbsStore.isManual) {
+    buttonPressed.value = true;
+    triggerButtonAnimation(true);
+    orbsStore.startManualProgress();
+  }
 };
 
 const handleMouseUp = () => {
-  buttonPressed.value = false;
-  triggerButtonAnimation(false);
-};
-
-const resetProgress = () => {
-  progress.value = 0;
-  setTimeout(() => {
-    if (!isManualMode.value) {
-      startAutoProgress();
-    }
-  }, 100); // Brief delay before restarting progress
-};
-
-const startAutoProgress = () => {
-  intervalId = setInterval(() => {
-    if (progress.value < 100) {
-      progress.value += 0.1; // Smaller increment for smoother animation
-    } else {
-      fillCounter.value += 1;
-      clearInterval(intervalId);
-      resetProgress();
-    }
-  }, 10); // Shorter interval for smoother updates
-};
-
-const stopAutoProgress = () => {
-  if (intervalId) {
-    clearInterval(intervalId);
-    intervalId = null;
+  if (orbsStore.isManual) {
+    buttonPressed.value = false;
+    triggerButtonAnimation(false);
+    orbsStore.stopManualProgress();
   }
 };
-
-onMounted(async () => {
-  orbsStore.initData();
-  startAutoProgress();
-
-  window.addEventListener('keydown', handleKeyDown);
-  window.addEventListener('keyup', handleKeyUp);
-  window.addEventListener('mousedown', handleMouseDown);
-  window.addEventListener('mouseup', handleMouseUp);
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleKeyDown);
-  window.removeEventListener('keyup', handleKeyUp);
-  window.removeEventListener('mousedown', handleMouseDown);
-  window.removeEventListener('mouseup', handleMouseUp);
-  stopAutoProgress();
-});
-
-watch(isManualMode, (newValue) => {
-  if (newValue) {
-    // Manual mode activated, reset progress and stop automatic progress
-    stopAutoProgress();
-    progress.value = 0;
-  } else {
-    // Automatic mode activated, start auto progress
-    resetProgress();
-  }
-});
 
 const buyResource = (resourceId: any) => {
   // Implement buy logic here
@@ -102,35 +49,38 @@ const buyResource = (resourceId: any) => {
 const triggerButtonAnimation = (isPressing) => {
   if (isPressing) {
     buttonAnimating.value = true;
-    if (isManualMode.value) {
-      const manualInterval = setInterval(() => {
-        if (buttonPressed.value) {
-          if (progress.value < 100) {
-            progress.value += 0.1; // Increase the progress manually
-          } else {
-            fillCounter.value += 1;
-            progress.value = 0; // Reset the progress when it reaches 100%
-          }
-        } else {
-          clearInterval(manualInterval);
-        }
-      }, 10); // Short interval for smooth progress
-    }
   } else {
     setTimeout(() => {
       buttonAnimating.value = false;
     }, 250); // Duration of the animation for release
   }
 };
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+  window.addEventListener('keyup', handleKeyUp);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+  window.removeEventListener('keyup', handleKeyUp);
+});
+
+watch(orbsStore.isManual, (newValue) => {
+  if (newValue) {
+    orbsStore.stopAutoProgress();
+  } else {
+    orbsStore.stopManualProgress();
+    orbsStore.startAutoProgress();
+  }
+});
 </script>
-
-
 
 <template>
   <div class="card grid grid-cols-12 h-[80vh] p-4 items-center">
     <!-- Progress Bar with Checkbox and Counter -->
     <div class="col-span-3 flex items-center">
-      <input type="checkbox" id="manualMode" v-model="isManualMode" />
+      <input type="checkbox" id="manualMode" v-model="orbsStore.isManual" />
       <label for="manualMode" class="ml-2">Manual Mode</label>
     </div>
     <div class="col-span-6 w-full mb-4">
@@ -138,11 +88,12 @@ const triggerButtonAnimation = (isPressing) => {
         <div class="progress-bar-fill-wrapper">
           <div
               class="progress-bar-fill"
-              :style="{ width: progress + '%' }"
+              :style="{ width: orbsStore.progress + '%' }"
           ></div>
         </div>
         <div class="progress-bar-counter">
-          {{ fillCounter }}
+          {{ orbsStore.fillCounter }}<br>
+          {{ orbsStore.tickTimeSeconds }}s / {{ orbsStore.reductionSeconds }}s
         </div>
       </div>
     </div>
@@ -194,6 +145,7 @@ const triggerButtonAnimation = (isPressing) => {
     <!-- Space Button -->
     <div class="col-span-12 flex justify-center mt-4">
       <div
+          v-if="orbsStore.isManual"
           :class="['button', { 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
           @mousedown="handleMouseDown"
           @mouseup="handleMouseUp"
@@ -201,13 +153,6 @@ const triggerButtonAnimation = (isPressing) => {
     </div>
   </div>
 </template>
-
-
-
-
-
-
-
 
 <style scoped>
 .bg-primary-custom {
@@ -241,30 +186,32 @@ const triggerButtonAnimation = (isPressing) => {
   top: 50%;
   transform: translateY(-50%);
   color: #000; /* Text color for the counter */
+  text-align: center;
+  width: 100%;
 }
 
 @keyframes buttonPress {
   0% {
-    background-image: url('@/assets/art/tile120.png');
+    background-image: url('assets/art/tile120.png');
   }
   100% {
-    background-image: url('@/assets/art/tile122.png');
+    background-image: url('assets/art/tile122.png');
   }
 }
 
 @keyframes buttonRelease {
   0% {
-    background-image: url('@/assets/art/tile122.png');
+    background-image: url('assets/art/tile122.png');
   }
   100% {
-    background-image: url('@/assets/art/tile120.png');
+    background-image: url('assets/art/tile120.png');
   }
 }
 
 .button {
   width: 128px; /* Adjust size as needed */
   height: 64px; /* Adjust size as needed */
-  background-image: url('@/assets/art/tile120.png'); /* Initial background */
+  background-image: url('assets/art/tile120.png'); /* Initial background */
   background-size: cover;
   background-position: center;
 }
@@ -277,8 +224,3 @@ const triggerButtonAnimation = (isPressing) => {
   animation: buttonRelease 0.05s steps(2) forwards;
 }
 </style>
-
-
-
-
-

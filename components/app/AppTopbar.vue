@@ -57,9 +57,7 @@ function toggle(event: any) {
   op.value.toggle(event)
 }
 
-function redirectToGithub() {
-  window.open('https://github.com/sfxcode/nuxt3-primevue-starter', '_blank')
-}
+
 </script>
 
 <template>

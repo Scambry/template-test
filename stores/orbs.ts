@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import blackDustIcon from '~/assets/art/black_dust.png';
 import blueDustIcon from '~/assets/art/blue_dust.png';
 import greenDustIcon from '~/assets/art/green_dust.png';
@@ -22,6 +22,13 @@ interface Resource {
 export const useOrbsStore = defineStore('orbs', () => {
   const dust = ref<Resource[]>([]);
   const orbs = ref<Resource[]>([]);
+  const progress = ref(0);
+  const fillCounter = ref(0);
+  const tickTime = ref(10000); // 10 seconds
+  const isManual = ref(false);
+  let intervalId: number | null = null;
+  let manualIntervalId: number | null = null;
+  const initialTickTime = 10000; // Initial tick time in milliseconds
 
   const initData = () => {
     dust.value = [
@@ -59,5 +66,74 @@ export const useOrbsStore = defineStore('orbs', () => {
     }
   };
 
-  return { dust, orbs, getResource, incrementResource, decrementResource, initData };
+  const setProgress = (newProgress: number) => {
+    progress.value = newProgress;
+  };
+
+  const completeTick = () => {
+    fillCounter.value += 1;
+    progress.value = 0;
+  };
+
+  const startAutoProgress = () => {
+    if (process.client && intervalId === null && !isManual.value) {
+      const increment = 100 / (tickTime.value / 100); // Calculate increment to complete in tickTime
+      intervalId = window.setInterval(() => {
+        if (progress.value < 100) {
+          progress.value += increment;
+        } else {
+          completeTick();
+        }
+      }, 100); // Update every 100 milliseconds
+    }
+  };
+
+  const stopAutoProgress = () => {
+    if (intervalId !== null) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  };
+
+  const startManualProgress = () => {
+    if (manualIntervalId === null) {
+      const increment = 100 / (tickTime.value / 100);
+      manualIntervalId = window.setInterval(() => {
+        if (progress.value < 100) {
+          progress.value += increment;
+        } else {
+          completeTick();
+          // Reduce tickTime by 10% up to a maximum reduction of 30%
+          const maxReduction = initialTickTime * 0.7;
+          tickTime.value = Math.max(tickTime.value - (tickTime.value * 0.1), maxReduction);
+        }
+      }, 100); // Update every 100 milliseconds
+    }
+  };
+
+  const stopManualProgress = () => {
+    if (manualIntervalId !== null) {
+      clearInterval(manualIntervalId);
+      manualIntervalId = null;
+    }
+  };
+
+  const tickTimeSeconds = computed(() => (tickTime.value / 1000).toFixed(1));
+  const reductionSeconds = computed(() => ((initialTickTime - tickTime.value) / 1000).toFixed(1));
+
+  watch(isManual, (newValue) => {
+    if (newValue) {
+      stopAutoProgress();
+    } else {
+      stopManualProgress(); // Ensure manual progress stops if we switch back to auto
+      startAutoProgress();
+    }
+  });
+
+  if (process.client) {
+    initData(); // Initialize data when store is created
+    startAutoProgress();
+  }
+
+  return { dust, orbs, progress, fillCounter, tickTime, isManual, getResource, incrementResource, decrementResource, initData, setProgress, startAutoProgress, stopAutoProgress, startManualProgress, stopManualProgress, completeTick, tickTimeSeconds, reductionSeconds };
 });

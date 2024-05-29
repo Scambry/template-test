@@ -12,8 +12,7 @@ export function useNavigationMenu() {
       {
         label: 'Game',
         items: [
-          { label: 'Game 1', icon: 'pi pi-fw pi-user-edit', to: '/templates/blueprint' },
-          { label: 'Game 2', icon: 'pi pi-fw pi-user-edit', to: '/templates/blueprint2' },
+          { label: 'Teleporter ', icon: 'pi pi-fw pi-user-edit', to: '/teleporter' },
         ],
       }
 

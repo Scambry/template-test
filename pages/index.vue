@@ -10,7 +10,9 @@ import AdvertiseBox from '@/components/AdvertiseBox.vue'
       <span class="text-green-400"> & Testprojekt </span>
     </div>
     <h2 class="text-2xl pb-6">
-     Idle Game Testing
+      <NuxtLink to="/teleporter" class="layout-topbar-logo">
+        <span style="color: var(--primary-color)">Idle Game</span>
+      </NuxtLink>
     </h2>
 
   </div>
