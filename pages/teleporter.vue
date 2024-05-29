@@ -113,10 +113,7 @@ watch(orbsStore.isManual, (newValue) => {
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
         <img :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-        <button class="ml-2 p-button p-component">
-          Buy
-        </button>
-        <span>{{ resource.cost }}</span>
+          <Button :label="resource.cost" class="ml-2 p-button-rounded w-[4rem] h-[2rem]" />
       </div>
     </div>
 
@@ -141,10 +138,8 @@ watch(orbsStore.isManual, (newValue) => {
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
         <img :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-        <button class="ml-2 p-button p-component">
-          Buy
-        </button>
-        <span>{{ resource.cost }}</span>
+        <Button :label="resource.cost" class="ml-2 p-button-rounded w-[4rem] h-[2rem]" />
+
       </div>
     </div>
     <!-- Space Button -->

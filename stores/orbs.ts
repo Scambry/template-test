@@ -196,7 +196,7 @@ export const useOrbsStore = defineStore('orbs', () => {
   })
 
   onMounted(() => {
-    // loadState(); // Load state when store is created
+     loadState(); // Load state when store is created
     initData() // Initialize data if dust or orbs array is empty
 
     startAutoProgress()
