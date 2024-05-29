@@ -112,7 +112,7 @@ watch(orbsStore.isManual, (newValue) => {
       >
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
-        <img :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
+        <img draggable="false" :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
         <Button :label="resource.cost" class="ml-2 p-button-rounded w-[4rem] h-[2rem]" @click="orbsStore.buyResource(resource.id, orbsStore.dust)" />      </div>
     </div>
 
@@ -120,6 +120,7 @@ watch(orbsStore.isManual, (newValue) => {
     <div class="game-container col-span-8 flex justify-center items-center h-full bg-surface-card">
       <div class="sprite-box flex justify-center items-center w-1/2 h-3/5 border-2 border-black">
         <img
+            draggable="false"
           src="/assets/art/teleport_void.png"
           alt="Borg Infested Teleporter"
           class="sprite-image w-4/5 h-4/5 object-contain"
@@ -136,7 +137,7 @@ watch(orbsStore.isManual, (newValue) => {
       >
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
-        <img :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
+        <img draggable="false" :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
         <Button :label="resource.cost" class="ml-2 p-button-rounded w-[4rem] h-[2rem]" @click="orbsStore.buyResource(resource.id, orbsStore.orbs)" />
 
       </div>
@@ -238,5 +239,10 @@ watch(orbsStore.isManual, (newValue) => {
 
 .button.release-animate {
   animation: buttonRelease 0.05s steps(2) forwards;
+}
+
+img {
+  user-select: none;
+  pointer-events: none;
 }
 </style>
