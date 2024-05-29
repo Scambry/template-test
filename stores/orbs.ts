@@ -24,11 +24,11 @@ export const useOrbsStore = defineStore('orbs', () => {
   const orbs = ref<Resource[]>([]);
   const progress = ref(0);
   const fillCounter = ref(0);
-  const tickTime = ref(10000); // 10 seconds
+  const initialTickTime = 10000; // Initial tick time in milliseconds
+  const tickTime = ref(initialTickTime); // 10 seconds
   const isManual = ref(false);
   let intervalId: number | null = null;
   let manualIntervalId: number | null = null;
-  const initialTickTime = 10000; // Initial tick time in milliseconds
 
   const initData = () => {
     dust.value = [
@@ -106,6 +106,7 @@ export const useOrbsStore = defineStore('orbs', () => {
           // Reduce tickTime by 10% up to a maximum reduction of 30%
           const maxReduction = initialTickTime * 0.7;
           tickTime.value = Math.max(tickTime.value - (tickTime.value * 0.1), maxReduction);
+          console.log(`New tickTime: ${tickTime.value}ms`);
         }
       }, 100); // Update every 100 milliseconds
     }
@@ -126,6 +127,7 @@ export const useOrbsStore = defineStore('orbs', () => {
       stopAutoProgress();
     } else {
       stopManualProgress(); // Ensure manual progress stops if we switch back to auto
+      tickTime.value = initialTickTime; // Reset tickTime to initial value
       startAutoProgress();
     }
   });

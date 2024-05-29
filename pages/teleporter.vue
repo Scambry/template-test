@@ -92,7 +92,9 @@ watch(orbsStore.isManual, (newValue) => {
           ></div>
         </div>
         <div class="progress-bar-counter">
-          {{ orbsStore.fillCounter }}<br>
+          {{ orbsStore.fillCounter }}
+        </div>
+        <div class="progress-bar-time">
           {{ orbsStore.tickTimeSeconds }}s / {{ orbsStore.reductionSeconds }}s
         </div>
       </div>
@@ -186,8 +188,18 @@ watch(orbsStore.isManual, (newValue) => {
   top: 50%;
   transform: translateY(-50%);
   color: #000; /* Text color for the counter */
-  text-align: center;
+  text-align: right;
   width: 100%;
+}
+
+.progress-bar-time {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #000; /* Text color for the time display */
+  text-align: center;
+  white-space: nowrap;
 }
 
 @keyframes buttonPress {
