@@ -200,7 +200,7 @@ watch(orbsStore.isManual, (newValue) => {
 .card {
   width: 100%; /* Ensure the card takes the full width of the container */
   max-width: 1200px; /* Optionally, set a max-width to prevent it from getting too large */
-  height: calc(100% - 5rem); /* Adjust height to account for topbar and footer */
+  height: calc(100% - 10rem); /* Adjust height to account for topbar and footer */
 }
 
 .progress-bar-container {
@@ -324,6 +324,16 @@ img {
   .button-container {
     width: 100px; /* Adjust button size for smaller screens */
     height: 50px;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 768px) {
+  .card-wrapper {
+    flex-direction: column; /* Ensure proper layout in landscape mode */
+    padding: 0.5rem; /* Adjust padding for landscape */
+  }
+  .card {
+    height: calc(100% - 10rem); /* Ensure proper height in landscape */
   }
 }
 </style>
