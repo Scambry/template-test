@@ -17,22 +17,23 @@ interface Resource {
   name: string;
   count: number;
   icon: string;
+  cost: number;
 }
 
 const defaultDust = [
-  { id: 1, name: 'Black', count: 0, icon: blackDustIcon },
-  { id: 2, name: 'Blue', count: 0, icon: blueDustIcon },
-  { id: 3, name: 'Green', count: 0, icon: greenDustIcon },
-  { id: 4, name: 'Orange', count: 0, icon: orangeDustIcon },
-  { id: 5, name: 'Purple', count: 0, icon: purpleDustIcon },
+  { id: 1, name: 'Black', cost: 1, count: 0, icon: blackDustIcon },
+  { id: 2, name: 'Blue', cost: 10, count: 0, icon: blueDustIcon },
+  { id: 3, name: 'Green', cost: 25, count: 0, icon: greenDustIcon },
+  { id: 4, name: 'Orange', cost: 50, count: 0, icon: orangeDustIcon },
+  { id: 5, name: 'Purple', cost: 100, count: 0, icon: purpleDustIcon },
 ];
 
 const defaultOrbs = [
-  { id: 1, name: 'Black', count: 0, icon: blackOrbIcon },
-  { id: 2, name: 'Blue', count: 0, icon: blueOrbIcon },
-  { id: 3, name: 'Green', count: 0, icon: greenOrbIcon },
-  { id: 4, name: 'Orange', count: 0, icon: orangeOrbIcon },
-  { id: 5, name: 'Purple', count: 0, icon: purpleOrbIcon },
+  { id: 1, name: 'Black', cost: 1, count: 0, icon: blackOrbIcon },
+  { id: 2, name: 'Blue', cost: 10, count: 0, icon: blueOrbIcon },
+  { id: 3, name: 'Green', cost: 25, count: 0, icon: greenOrbIcon },
+  { id: 4, name: 'Orange', cost: 50, count: 0, icon: orangeOrbIcon },
+  { id: 5, name: 'Purple', cost: 100, count: 0, icon: purpleOrbIcon },
 ];
 
 export const useOrbsStore = defineStore('orbs', () => {
@@ -196,7 +197,7 @@ export const useOrbsStore = defineStore('orbs', () => {
   });
 
   onMounted(() => {
-    loadState(); // Load state when store is created
+    //loadState(); // Load state when store is created
     initData(); // Initialize data if dust or orbs array is empty
 
     startAutoProgress();

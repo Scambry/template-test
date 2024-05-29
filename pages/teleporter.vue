@@ -41,10 +41,6 @@ const handleMouseUp = () => {
   }
 };
 
-const buyResource = (resourceId: any) => {
-  // Implement buy logic here
-  console.log(`Buying resource with ID: ${resourceId}`);
-};
 
 const triggerButtonAnimation = (isPressing) => {
   if (isPressing) {
@@ -58,6 +54,8 @@ const triggerButtonAnimation = (isPressing) => {
 
 onMounted(() => {
   orbsStore.initData(); // Ensure initData is called to initialize the resources
+
+
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keyup', handleKeyUp);
 });
@@ -117,9 +115,10 @@ watch(orbsStore.isManual, (newValue) => {
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
         <img :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-        <button @click="buyResource(resource.id)" class="ml-2 p-button p-component">
+        <button class="ml-2 p-button p-component">
           Buy
         </button>
+        <span>{{ resource.cost }}</span>
       </div>
     </div>
 
@@ -144,9 +143,10 @@ watch(orbsStore.isManual, (newValue) => {
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
         <img :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-        <button @click="buyResource(resource.id)" class="ml-2 p-button p-component">
+        <button  class="ml-2 p-button p-component">
           Buy
         </button>
+        <span>{{ resource.cost }}</span>
       </div>
     </div>
     <!-- Space Button -->
