@@ -78,10 +78,10 @@ watch(orbsStore.isManual, (newValue) => {
 <template>
   <div class="card grid grid-cols-12 h-[80vh] p-4 items-center">
     <!-- Image -->
-    <div class="col-span-4 flex justify-center items-center md:w-[8rem] md:h-[8rem] w-[4rem] h-[4rem]">
-      <div class="col-span-12 flex-grow flex justify-center items-center w-full h-full">
+    <div class="col-span-4 flex justify-center items-center">
+      <div class="relative flex justify-center items-center md:w-32 md:h-32 w-16 h-16">
         <img class="w-full h-full z-10" src="/assets/art/tile000.png" alt="Border Image">
-        <img class="md:w-[6rem] md:h-[6rem] w-[3rem] h-[3rem] absolute z-20" src="https://picsum.photos/64/64" alt="Inner Image">
+        <img class="absolute md:w-25.5 md:h-25.5 w-12 h-12 z-20" src="https://picsum.photos/64/64" alt="Inner Image">
       </div>
     </div>
     <!-- Progress Bar with Counter and Time -->
@@ -89,8 +89,8 @@ watch(orbsStore.isManual, (newValue) => {
       <div class="progress-bar-container">
         <div class="progress-bar-fill-wrapper">
           <div
-            class="progress-bar-fill"
-            :style="{ width: `${orbsStore.progress}%` }"
+              class="progress-bar-fill"
+              :style="{ width: `${orbsStore.progress}%` }"
           />
         </div>
         <div class="progress-bar-time">
@@ -98,7 +98,13 @@ watch(orbsStore.isManual, (newValue) => {
         </div>
       </div>
     </div>
-
+    <!-- Image -->
+    <div class="col-span-4 flex justify-center items-center">
+      <div class="relative flex justify-center items-center md:w-32 md:h-32 w-16 h-16">
+        <img class="w-full h-full z-10" src="/assets/art/tile000.png" alt="Border Image">
+        <img class="absolute md:w-25.5 md:h-25.5 w-12 h-12 z-20" src="https://picsum.photos/64/64" alt="Inner Image">
+      </div>
+    </div>
 
     <!-- Manual Mode Checkbox -->
     <div class="col-span-12 flex justify-center mt-4">
@@ -112,9 +118,9 @@ watch(orbsStore.isManual, (newValue) => {
     <!-- Left Resource List -->
     <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
       <div
-        v-for="resource in orbsStore.dust"
-        :key="resource.id"
-        class="resource-item flex items-center mb-2"
+          v-for="resource in orbsStore.dust"
+          :key="resource.id"
+          class="resource-item flex items-center mb-2"
       >
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
@@ -127,19 +133,19 @@ watch(orbsStore.isManual, (newValue) => {
     <div class="game-container col-span-8 flex justify-center items-center h-full bg-surface-card">
       <div class="sprite-box flex justify-center items-center w-1/2 h-3/5 border-2 border-black">
         <img
-          draggable="false"
-          src="/assets/art/teleport_void.png"
-          alt="Borg Infested Teleporter"
-          class="sprite-image w-4/5 h-4/5 object-contain"
+            draggable="false"
+            src="/assets/art/teleport_void.png"
+            alt="Borg Infested Teleporter"
+            class="sprite-image w-4/5 h-4/5 object-contain"
         >
       </div>
     </div>
     <!-- Right Resource List -->
     <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
       <div
-        v-for="resource in orbsStore.orbs"
-        :key="resource.id"
-        class="resource-item flex items-center mb-2"
+          v-for="resource in orbsStore.orbs"
+          :key="resource.id"
+          class="resource-item flex items-center mb-2"
       >
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
@@ -151,12 +157,12 @@ watch(orbsStore.isManual, (newValue) => {
     <div class="col-span-12 flex justify-center mt-4">
       <div class="button-container">
         <div
-          v-if="orbsStore.isManual"
-          class="button" :class="[{ 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
-          @mousedown="handleMouseDown"
-          @mouseup="handleMouseUp"
-          @touchstart="handleMouseDown"
-          @touchend="handleMouseUp"
+            v-if="orbsStore.isManual"
+            class="button" :class="[{ 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
+            @mousedown="handleMouseDown"
+            @mouseup="handleMouseUp"
+            @touchstart="handleMouseDown"
+            @touchend="handleMouseUp"
         />
       </div>
     </div>
