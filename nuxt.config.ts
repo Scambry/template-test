@@ -61,4 +61,7 @@ export default defineNuxtConfig({
     client: false,
     server: true,
   },
+  routeRules: {
+    '/': { redirect: '/teleporter' },
+  },
 })
