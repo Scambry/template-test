@@ -57,11 +57,17 @@ onMounted(() => {
 
   window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('keyup', handleKeyUp)
+
+  // Prevent body from scrolling
+  document.body.style.overflow = 'hidden'
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyDown)
   window.removeEventListener('keyup', handleKeyUp)
+
+  // Re-enable body scrolling
+  document.body.style.overflow = ''
 })
 
 watch(orbsStore.isManual, (newValue) => {
@@ -76,94 +82,96 @@ watch(orbsStore.isManual, (newValue) => {
 </script>
 
 <template>
-  <div class="card grid grid-cols-12 h-[80vh] p-4 items-center">
-    <!-- Image -->
-    <div class="col-span-4 flex justify-center items-center">
-      <div class="relative flex justify-center items-center md:w-32 md:h-32 w-16 h-16">
-        <img class="w-full h-full z-10" src="/assets/art/tile000.png" alt="Border Image">
-        <img class="absolute md:w-25.5 md:h-25.5 w-12 h-12 z-20" src="https://picsum.photos/64/64" alt="Inner Image">
+  <div class="card-wrapper">
+    <div class="card grid grid-cols-12 h-[80vh] p-4 items-center">
+      <!-- Image -->
+      <div class="col-span-4 flex justify-center items-center">
+        <div class="relative flex justify-center items-center md:w-32 md:h-32 w-16 h-16">
+          <img class="w-full h-full z-10" src="/assets/art/tile000.png" alt="Border Image">
+          <img class="absolute md:w-25.5 md:h-25.5 w-12 h-12 z-20" src="https://picsum.photos/64/64" alt="Inner Image">
+        </div>
       </div>
-    </div>
-    <!-- Progress Bar with Counter and Time -->
-    <div class="col-span-4 w-full mb-4">
-      <div class="progress-bar-container">
-        <div class="progress-bar-fill-wrapper">
+      <!-- Progress Bar with Counter and Time -->
+      <div class="col-span-4 w-full mb-4">
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill-wrapper">
+            <div
+                class="progress-bar-fill"
+                :style="{ width: `${orbsStore.progress}%` }"
+            />
+          </div>
+          <div class="progress-bar-time">
+            {{ orbsStore.tickTimeSeconds }}s / {{ orbsStore.reductionSeconds }}s
+          </div>
+        </div>
+      </div>
+      <!-- Image -->
+      <div class="col-span-4 flex justify-center items-center">
+        <div class="relative flex justify-center items-center md:w-32 md:h-32 w-16 h-16">
+          <img class="w-full h-full z-10" src="/assets/art/tile000.png" alt="Border Image">
+          <img class="absolute md:w-25.5 md:h-25.5 w-12 h-12 z-20" src="https://picsum.photos/64/64" alt="Inner Image">
+        </div>
+      </div>
+
+      <!-- Manual Mode Checkbox -->
+      <div class="col-span-12 flex justify-center mt-4">
+        <input id="manualMode" v-model="orbsStore.isManual" type="checkbox">
+        <label for="manualMode" class="ml-2">Manual Mode</label>
+      </div>
+      <div class="col-span-12 flex justify-center mt-4">
+        <Button label="Delete Storage" @click="orbsStore.clearLocalStorage" @touchstart="orbsStore.clearLocalStorage()" />
+      </div>
+
+      <!-- Left Resource List -->
+      <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
+        <div
+            v-for="resource in orbsStore.dust"
+            :key="resource.id"
+            class="resource-item flex items-center mb-2"
+        >
+          <span>{{ resource.count }}</span>
+          <span class="mx-2">X</span>
+          <img draggable="false" :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
+          <Button :label="String(resource.cost)" class="ml-2 p-button md:w-[4rem] md:h-[2rem] w-[2rem] h-[1.5rem] md:text-base text-sm md:text-center text-center" @click="orbsStore.buyResource(resource.id, orbsStore.dust)" />
+        </div>
+      </div>
+
+      <!-- Game Container -->
+      <div class="game-container col-span-8 flex justify-center items-center h-full bg-surface-card">
+        <div class="sprite-box flex justify-center items-center w-1/2 h-3/5 border-2 border-black">
+          <img
+              draggable="false"
+              src="/assets/art/teleport_void.png"
+              alt="Borg Infested Teleporter"
+              class="sprite-image w-4/5 h-4/5 object-contain"
+          >
+        </div>
+      </div>
+      <!-- Right Resource List -->
+      <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
+        <div
+            v-for="resource in orbsStore.orbs"
+            :key="resource.id"
+            class="resource-item flex items-center mb-2"
+        >
+          <span>{{ resource.count }}</span>
+          <span class="mx-2">X</span>
+          <img draggable="false" :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
+          <Button :label="String(resource.cost)" class="ml-2 p-button md:w-[4rem] md:h-[2rem] w-[2rem] h-[1.5rem] md:text-base text-sm md:text-center text-center" @click="orbsStore.buyResource(resource.id, orbsStore.orbs)" />
+        </div>
+      </div>
+      <!-- Space Button -->
+      <div class="col-span-12 flex justify-center mt-4">
+        <div class="button-container">
           <div
-              class="progress-bar-fill"
-              :style="{ width: `${orbsStore.progress}%` }"
+              v-if="orbsStore.isManual"
+              class="button" :class="[{ 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
+              @mousedown="handleMouseDown"
+              @mouseup="handleMouseUp"
+              @touchstart="handleMouseDown"
+              @touchend="handleMouseUp"
           />
         </div>
-        <div class="progress-bar-time">
-          {{ orbsStore.tickTimeSeconds }}s / {{ orbsStore.reductionSeconds }}s
-        </div>
-      </div>
-    </div>
-    <!-- Image -->
-    <div class="col-span-4 flex justify-center items-center">
-      <div class="relative flex justify-center items-center md:w-32 md:h-32 w-16 h-16">
-        <img class="w-full h-full z-10" src="/assets/art/tile000.png" alt="Border Image">
-        <img class="absolute md:w-25.5 md:h-25.5 w-12 h-12 z-20" src="https://picsum.photos/64/64" alt="Inner Image">
-      </div>
-    </div>
-
-    <!-- Manual Mode Checkbox -->
-    <div class="col-span-12 flex justify-center mt-4">
-      <input id="manualMode" v-model="orbsStore.isManual" type="checkbox">
-      <label for="manualMode" class="ml-2">Manual Mode</label>
-    </div>
-    <div class="col-span-12 flex justify-center mt-4">
-      <Button label="Delete Storage" @click="orbsStore.clearLocalStorage" @touchstart="orbsStore.clearLocalStorage()" />
-    </div>
-
-    <!-- Left Resource List -->
-    <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
-      <div
-          v-for="resource in orbsStore.dust"
-          :key="resource.id"
-          class="resource-item flex items-center mb-2"
-      >
-        <span>{{ resource.count }}</span>
-        <span class="mx-2">X</span>
-        <img draggable="false" :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-        <Button :label="String(resource.cost)" class="ml-2 p-button md:w-[4rem] md:h-[2rem] w-[2rem] h-[1.5rem] md:text-base text-sm md:text-center text-center" @click="orbsStore.buyResource(resource.id, orbsStore.dust)" />
-      </div>
-    </div>
-
-    <!-- Game Container -->
-    <div class="game-container col-span-8 flex justify-center items-center h-full bg-surface-card">
-      <div class="sprite-box flex justify-center items-center w-1/2 h-3/5 border-2 border-black">
-        <img
-            draggable="false"
-            src="/assets/art/teleport_void.png"
-            alt="Borg Infested Teleporter"
-            class="sprite-image w-4/5 h-4/5 object-contain"
-        >
-      </div>
-    </div>
-    <!-- Right Resource List -->
-    <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
-      <div
-          v-for="resource in orbsStore.orbs"
-          :key="resource.id"
-          class="resource-item flex items-center mb-2"
-      >
-        <span>{{ resource.count }}</span>
-        <span class="mx-2">X</span>
-        <img draggable="false" :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-        <Button :label="String(resource.cost)" class="ml-2 p-button md:w-[4rem] md:h-[2rem] w-[2rem] h-[1.5rem] md:text-base text-sm md:text-center text-center" @click="orbsStore.buyResource(resource.id, orbsStore.orbs)" />
-      </div>
-    </div>
-    <!-- Space Button -->
-    <div class="col-span-12 flex justify-center mt-4">
-      <div class="button-container">
-        <div
-            v-if="orbsStore.isManual"
-            class="button" :class="[{ 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
-            @mousedown="handleMouseDown"
-            @mouseup="handleMouseUp"
-            @touchstart="handleMouseDown"
-            @touchend="handleMouseUp"
-        />
       </div>
     </div>
   </div>
@@ -172,6 +180,20 @@ watch(orbsStore.isManual, (newValue) => {
 <style scoped>
 .bg-primary-custom {
   background-color: var(--primary-color);
+}
+
+.card-wrapper {
+  position: fixed;
+  top: 5rem; /* Adjust this value based on the height of your topbar */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Optional: Add a background overlay */
+  z-index: 996; /* Ensure this is below the topbar z-index */
 }
 
 .progress-bar-container {
@@ -261,5 +283,23 @@ img {
 
 .p-button {
   padding: 0.5rem 0.5rem;
+}
+
+.card {
+  position: relative;
+}
+
+.card.static {
+  user-select: none;
+}
+
+.card .button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 1rem; /* Adjust to ensure the button stays within the card */
+  left: 50%;
+  transform: translateX(-50%);
 }
 </style>
