@@ -83,7 +83,7 @@ watch(orbsStore.isManual, (newValue) => {
 
 <template>
   <div class="card-wrapper">
-    <div class="card grid grid-cols-12 h-[80vh] p-4 items-center">
+    <div class="card grid grid-cols-12 p-4 items-center">
       <!-- Image -->
       <div class="col-span-4 flex justify-center items-center">
         <div class="relative flex justify-center items-center md:w-32 md:h-32 w-16 h-16">
@@ -183,17 +183,24 @@ watch(orbsStore.isManual, (newValue) => {
 }
 
 .card-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: fixed;
   top: 5rem; /* Adjust this value based on the height of your topbar */
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 5rem; /* Adjust to ensure the card doesn't overlap the footer */
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background-color: rgba(0, 0, 0, 0.5); /* Optional: Add a background overlay */
   z-index: 996; /* Ensure this is below the topbar z-index */
+  padding: 1rem; /* Add padding for better spacing on smaller screens */
+}
+
+.card {
+  width: 100%; /* Ensure the card takes the full width of the container */
+  max-width: 1200px; /* Optionally, set a max-width to prevent it from getting too large */
+  height: calc(100% - 5rem); /* Adjust height to account for topbar and footer */
 }
 
 .progress-bar-container {
@@ -301,5 +308,22 @@ img {
   bottom: 1rem; /* Adjust to ensure the button stays within the card */
   left: 50%;
   transform: translateX(-50%);
+}
+
+@media (max-width: 768px) {
+  .card-wrapper {
+    padding: 0.5rem; /* Adjust padding for smaller screens */
+  }
+  .card {
+    width: 100%;
+    height: auto; /* Ensure the card takes full width but auto height */
+  }
+  .progress-bar-container {
+    height: 20px; /* Adjust height for smaller screens */
+  }
+  .button-container {
+    width: 100px; /* Adjust button size for smaller screens */
+    height: 50px;
+  }
 }
 </style>
