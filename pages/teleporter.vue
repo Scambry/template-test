@@ -104,7 +104,7 @@ watch(orbsStore.isManual, (newValue) => {
 
     </div>
     <div class="col-span-12 flex justify-center mt-4">
-      <Button label="Delete Storage" @click="orbsStore.clearLocalStorage" @touchstart="orbsStore.clearLocalStorage()" />
+      <Button  label="Delete Storage" @click="orbsStore.clearLocalStorage" @touchstart="orbsStore.clearLocalStorage()" />
 
     </div>
 
@@ -250,5 +250,9 @@ watch(orbsStore.isManual, (newValue) => {
 img {
   user-select: none;
   pointer-events: none;
+}
+
+.p-button {
+  padding: 0.5rem 0.5rem;
 }
 </style>
