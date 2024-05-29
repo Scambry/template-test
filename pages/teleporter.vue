@@ -1,91 +1,91 @@
 <script setup lang='ts'>
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
-import 'primevue/resources/primevue.min.css';
-import 'primeicons/primeicons.css';
-import { useOrbsStore } from '~/stores/orbs'; // Adjust the path according to your project structure
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import 'primevue/resources/primevue.min.css'
+import 'primeicons/primeicons.css'
+import { useOrbsStore } from '~/stores/orbs' // Adjust the path according to your project structure
 
-const orbsStore = useOrbsStore();
+const orbsStore = useOrbsStore()
 
-const buttonAnimating = ref(false);
-const buttonPressed = ref(false);
+const buttonAnimating = ref(false)
+const buttonPressed = ref(false)
 
-const handleKeyDown = (event) => {
+function handleKeyDown(event) {
   if (event.code === 'Space' && !buttonPressed.value && orbsStore.isManual) {
-    buttonPressed.value = true;
-    triggerButtonAnimation(true);
-    orbsStore.startManualProgress();
+    buttonPressed.value = true
+    triggerButtonAnimation(true)
+    orbsStore.startManualProgress()
   }
-};
+}
 
-const handleKeyUp = (event) => {
+function handleKeyUp(event) {
   if (event.code === 'Space' && orbsStore.isManual) {
-    buttonPressed.value = false;
-    triggerButtonAnimation(false);
-    orbsStore.stopManualProgress();
+    buttonPressed.value = false
+    triggerButtonAnimation(false)
+    orbsStore.stopManualProgress()
   }
-};
+}
 
-const handleMouseDown = () => {
+function handleMouseDown() {
   if (orbsStore.isManual) {
-    buttonPressed.value = true;
-    triggerButtonAnimation(true);
-    orbsStore.startManualProgress();
+    buttonPressed.value = true
+    triggerButtonAnimation(true)
+    orbsStore.startManualProgress()
   }
-};
+}
 
-const handleMouseUp = () => {
+function handleMouseUp() {
   if (orbsStore.isManual) {
-    buttonPressed.value = false;
-    triggerButtonAnimation(false);
-    orbsStore.stopManualProgress();
+    buttonPressed.value = false
+    triggerButtonAnimation(false)
+    orbsStore.stopManualProgress()
   }
-};
+}
 
-
-const triggerButtonAnimation = (isPressing) => {
+function triggerButtonAnimation(isPressing) {
   if (isPressing) {
-    buttonAnimating.value = true;
-  } else {
-    setTimeout(() => {
-      buttonAnimating.value = false;
-    }, 250); // Duration of the animation for release
+    buttonAnimating.value = true
   }
-};
+  else {
+    setTimeout(() => {
+      buttonAnimating.value = false
+    }, 250) // Duration of the animation for release
+  }
+}
 
 onMounted(() => {
-  orbsStore.initData(); // Ensure initData is called to initialize the resources
+  orbsStore.initData() // Ensure initData is called to initialize the resources
 
-
-  window.addEventListener('keydown', handleKeyDown);
-  window.addEventListener('keyup', handleKeyUp);
-});
+  window.addEventListener('keydown', handleKeyDown)
+  window.addEventListener('keyup', handleKeyUp)
+})
 
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleKeyDown);
-  window.removeEventListener('keyup', handleKeyUp);
-});
+  window.removeEventListener('keydown', handleKeyDown)
+  window.removeEventListener('keyup', handleKeyUp)
+})
 
 watch(orbsStore.isManual, (newValue) => {
   if (newValue) {
-    orbsStore.stopAutoProgress();
-  } else {
-    orbsStore.stopManualProgress();
-    orbsStore.startAutoProgress();
+    orbsStore.stopAutoProgress()
   }
-});
+  else {
+    orbsStore.stopManualProgress()
+    orbsStore.startAutoProgress()
+  }
+})
 </script>
 
 <template>
   <div class="card grid grid-cols-12 h-[80vh] p-4 items-center">
     <!-- Progress Bar with Counter and Time -->
-    <div class="col-span-3"></div>
+    <div class="col-span-3" />
     <div class="col-span-6 w-full mb-4">
       <div class="progress-bar-container">
         <div class="progress-bar-fill-wrapper">
           <div
-              class="progress-bar-fill"
-              :style="{ width: orbsStore.progress + '%' }"
-          ></div>
+            class="progress-bar-fill"
+            :style="{ width: `${orbsStore.progress}%` }"
+          />
         </div>
         <div class="progress-bar-counter">
           {{ orbsStore.fillCounter }}
@@ -95,22 +95,20 @@ watch(orbsStore.isManual, (newValue) => {
         </div>
       </div>
     </div>
-    <div class="col-span-3"></div>
+    <div class="col-span-3" />
 
     <!-- Manual Mode Checkbox -->
     <div class="col-span-12 flex justify-center mt-4">
-      <input type="checkbox" id="manualMode" v-model="orbsStore.isManual" />
+      <input id="manualMode" v-model="orbsStore.isManual" type="checkbox">
       <label for="manualMode" class="ml-2">Manual Mode</label>
     </div>
-
-
 
     <!-- Left Resource List -->
     <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
       <div
-          v-for="resource in orbsStore.dust"
-          :key="resource.id"
-          class="resource-item flex items-center mb-2"
+        v-for="resource in orbsStore.dust"
+        :key="resource.id"
+        class="resource-item flex items-center mb-2"
       >
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
@@ -126,24 +124,24 @@ watch(orbsStore.isManual, (newValue) => {
     <div class="game-container col-span-8 flex justify-center items-center h-full bg-surface-card">
       <div class="sprite-box flex justify-center items-center w-1/2 h-3/5 border-2 border-black">
         <img
-            src="/assets/art/teleport_void.png"
-            alt="Borg Infested Teleporter"
-            class="sprite-image w-4/5 h-4/5 object-contain"
-        />
+          src="/assets/art/teleport_void.png"
+          alt="Borg Infested Teleporter"
+          class="sprite-image w-4/5 h-4/5 object-contain"
+        >
       </div>
     </div>
 
     <!-- Right Resource List -->
     <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
       <div
-          v-for="resource in orbsStore.orbs"
-          :key="resource.id"
-          class="resource-item flex items-center mb-2"
+        v-for="resource in orbsStore.orbs"
+        :key="resource.id"
+        class="resource-item flex items-center mb-2"
       >
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
         <img :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-        <button  class="ml-2 p-button p-component">
+        <button class="ml-2 p-button p-component">
           Buy
         </button>
         <span>{{ resource.cost }}</span>
@@ -153,11 +151,11 @@ watch(orbsStore.isManual, (newValue) => {
     <div class="col-span-12 flex justify-center mt-4">
       <div class="button-container">
         <div
-            v-if="orbsStore.isManual"
-            :class="['button', { 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
-            @mousedown="handleMouseDown"
-            @mouseup="handleMouseUp"
-        ></div>
+          v-if="orbsStore.isManual"
+          class="button" :class="[{ 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
+          @mousedown="handleMouseDown"
+          @mouseup="handleMouseUp"
+        />
       </div>
     </div>
   </div>
