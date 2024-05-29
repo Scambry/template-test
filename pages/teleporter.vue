@@ -150,6 +150,8 @@ watch(orbsStore.isManual, (newValue) => {
           class="button" :class="[{ 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
           @mousedown="handleMouseDown"
           @mouseup="handleMouseUp"
+          @touchstart="handleMouseDown"
+          @touchend="handleMouseUp"
         />
       </div>
     </div>
