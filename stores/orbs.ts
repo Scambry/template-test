@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import blackDustIcon from '~/assets/art/black_dust.png';
 import blueDustIcon from '~/assets/art/blue_dust.png';
 import greenDustIcon from '~/assets/art/green_dust.png';
@@ -19,6 +19,22 @@ interface Resource {
   icon: string;
 }
 
+const defaultDust = [
+  { id: 1, name: 'Black', count: 0, icon: blackDustIcon },
+  { id: 2, name: 'Blue', count: 0, icon: blueDustIcon },
+  { id: 3, name: 'Green', count: 0, icon: greenDustIcon },
+  { id: 4, name: 'Orange', count: 0, icon: orangeDustIcon },
+  { id: 5, name: 'Purple', count: 0, icon: purpleDustIcon },
+];
+
+const defaultOrbs = [
+  { id: 1, name: 'Black', count: 0, icon: blackOrbIcon },
+  { id: 2, name: 'Blue', count: 0, icon: blueOrbIcon },
+  { id: 3, name: 'Green', count: 0, icon: greenOrbIcon },
+  { id: 4, name: 'Orange', count: 0, icon: orangeOrbIcon },
+  { id: 5, name: 'Purple', count: 0, icon: purpleOrbIcon },
+];
+
 export const useOrbsStore = defineStore('orbs', () => {
   const dust = ref<Resource[]>([]);
   const orbs = ref<Resource[]>([]);
@@ -31,22 +47,62 @@ export const useOrbsStore = defineStore('orbs', () => {
   let intervalId: number | null = null;
   let manualIntervalId: number | null = null;
 
-  const initData = () => {
-    dust.value = [
-      { id: 1, name: 'Black', count: 0, icon: blackDustIcon },
-      { id: 2, name: 'Blue', count: 0, icon: blueDustIcon },
-      { id: 3, name: 'Green', count: 0, icon: greenDustIcon },
-      { id: 4, name: 'Orange', count: 0, icon: orangeDustIcon },
-      { id: 5, name: 'Purple', count: 0, icon: purpleDustIcon },
-    ];
+  const saveState = () => {
+    if (process.client) {
+      localStorage.setItem('dust', JSON.stringify(dust.value));
+      localStorage.setItem('orbs', JSON.stringify(orbs.value));
+      localStorage.setItem('progress', JSON.stringify(progress.value));
+      localStorage.setItem('fillCounter', JSON.stringify(fillCounter.value));
+      localStorage.setItem('tickTime', JSON.stringify(tickTime.value));
+      localStorage.setItem('isManual', JSON.stringify(isManual.value));
+      console.log('State saved', {
+        dust: dust.value,
+        orbs: orbs.value,
+        progress: progress.value,
+        fillCounter: fillCounter.value,
+        tickTime: tickTime.value,
+        isManual: isManual.value
+      });
+    }
+  };
 
-    orbs.value = [
-      { id: 1, name: 'Black', count: 0, icon: blackOrbIcon },
-      { id: 2, name: 'Blue', count: 0, icon: blueOrbIcon },
-      { id: 3, name: 'Green', count: 0, icon: greenOrbIcon },
-      { id: 4, name: 'Orange', count: 0, icon: orangeOrbIcon },
-      { id: 5, name: 'Purple', count: 0, icon: purpleOrbIcon },
-    ];
+  const loadState = () => {
+    if (process.client) {
+      const savedDust = localStorage.getItem('dust');
+      const savedOrbs = localStorage.getItem('orbs');
+      const savedProgress = localStorage.getItem('progress');
+      const savedFillCounter = localStorage.getItem('fillCounter');
+      const savedTickTime = localStorage.getItem('tickTime');
+      const savedIsManual = localStorage.getItem('isManual');
+
+      dust.value = savedDust ? JSON.parse(savedDust) : [];
+      orbs.value = savedOrbs ? JSON.parse(savedOrbs) : [];
+      progress.value = savedProgress !== null ? JSON.parse(savedProgress) : 0;
+      fillCounter.value = savedFillCounter !== null ? JSON.parse(savedFillCounter) : 0;
+      tickTime.value = savedTickTime !== null ? JSON.parse(savedTickTime) : initialTickTime;
+      isManual.value = savedIsManual !== null ? JSON.parse(savedIsManual) : false;
+
+      console.log('State loaded', {
+        dust: dust.value,
+        orbs: orbs.value,
+        progress: progress.value,
+        fillCounter: fillCounter.value,
+        tickTime: tickTime.value,
+        isManual: isManual.value
+      });
+    }
+  };
+
+  const initData = () => {
+    if (dust.value.length === 0) {
+      dust.value = defaultDust;
+    }
+
+    if (orbs.value.length === 0) {
+      orbs.value = defaultOrbs;
+    }
+
+    saveState(); // Save the initialized data to localStorage
   };
 
   const getResource = (resourceId: number, resourceList: Resource[]) => {
@@ -57,6 +113,7 @@ export const useOrbsStore = defineStore('orbs', () => {
     const resource = getResource(resourceId, resourceList);
     if (resource) {
       resource.count++;
+      saveState(); // Save state after incrementing
     }
   };
 
@@ -64,16 +121,19 @@ export const useOrbsStore = defineStore('orbs', () => {
     const resource = getResource(resourceId, resourceList);
     if (resource && resource.count > 0) {
       resource.count--;
+      saveState(); // Save state after decrementing
     }
   };
 
   const setProgress = (newProgress: number) => {
     progress.value = newProgress;
+    saveState(); // Save state after setting progress
   };
 
   const completeTick = () => {
     fillCounter.value += 1;
     progress.value = 0;
+    saveState(); // Save state after completing tick
   };
 
   const startAutoProgress = () => {
@@ -108,6 +168,7 @@ export const useOrbsStore = defineStore('orbs', () => {
           const newTickTime = tickTime.value - 1000;
           tickTime.value = Math.max(newTickTime, initialTickTime - maxReduction.value);
           console.log(`New tickTime: ${tickTime.value}ms`);
+          saveState(); // Save state after tick time reduction
         }
       }, 100); // Update every 100 milliseconds
     }
@@ -124,6 +185,7 @@ export const useOrbsStore = defineStore('orbs', () => {
   const reductionSeconds = computed(() => ((initialTickTime - tickTime.value) / 1000).toFixed(1));
 
   watch(isManual, (newValue) => {
+    saveState(); // Save state when isManual changes
     if (newValue) {
       stopAutoProgress();
     } else {
@@ -133,10 +195,22 @@ export const useOrbsStore = defineStore('orbs', () => {
     }
   });
 
-  if (process.client) {
-    initData(); // Initialize data when store is created
-    startAutoProgress();
-  }
+  onMounted(() => {
+    loadState(); // Load state when store is created
+    initData(); // Initialize data if dust or orbs array is empty
 
-  return { dust, orbs, progress, fillCounter, tickTime, isManual, maxReduction, getResource, incrementResource, decrementResource, initData, setProgress, startAutoProgress, stopAutoProgress, startManualProgress, stopManualProgress, completeTick, tickTimeSeconds, reductionSeconds };
+    startAutoProgress();
+
+    // Save state every 3 seconds
+    setInterval(() => {
+      saveState();
+    }, 3000);
+  });
+
+  return {
+    dust, orbs, progress, fillCounter, tickTime, isManual, maxReduction,
+    getResource, incrementResource, decrementResource, initData, setProgress,
+    startAutoProgress, stopAutoProgress, startManualProgress, stopManualProgress,
+    completeTick, tickTimeSeconds, reductionSeconds
+  };
 });
