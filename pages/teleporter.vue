@@ -113,8 +113,7 @@ watch(orbsStore.isManual, (newValue) => {
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
         <img :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-          <Button :label="resource.cost" class="ml-2 p-button-rounded w-[4rem] h-[2rem]" />
-      </div>
+        <Button :label="resource.cost" class="ml-2 p-button-rounded w-[4rem] h-[2rem]" @click="orbsStore.buyResource(resource.id, orbsStore.dust)" />      </div>
     </div>
 
     <!-- Game Container -->
@@ -138,7 +137,7 @@ watch(orbsStore.isManual, (newValue) => {
         <span>{{ resource.count }}</span>
         <span class="mx-2">X</span>
         <img :src="resource.icon" class="resource-icon text-2xl w-8 h-8" alt="resource icon">
-        <Button :label="resource.cost" class="ml-2 p-button-rounded w-[4rem] h-[2rem]" />
+        <Button :label="resource.cost" class="ml-2 p-button-rounded w-[4rem] h-[2rem]" @click="orbsStore.buyResource(resource.id, orbsStore.orbs)" />
 
       </div>
     </div>

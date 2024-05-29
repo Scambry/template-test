@@ -124,6 +124,14 @@ export const useOrbsStore = defineStore('orbs', () => {
     }
   }
 
+  const buyResource = (resourceId: number, resourceList: Resource[]) => {
+    const resource = getResource(resourceId, resourceList)
+    if (resource && fillCounter.value >= resource.cost) {
+      fillCounter.value -= resource.cost
+      incrementResource(resource.id, resourceList)
+    }
+  }
+
   const setProgress = (newProgress: number) => {
     progress.value = newProgress
     saveState() // Save state after setting progress
@@ -196,7 +204,7 @@ export const useOrbsStore = defineStore('orbs', () => {
   })
 
   onMounted(() => {
-     loadState(); // Load state when store is created
+    loadState() // Load state when store is created
     initData() // Initialize data if dust or orbs array is empty
 
     startAutoProgress()
@@ -218,6 +226,7 @@ export const useOrbsStore = defineStore('orbs', () => {
     getResource,
     incrementResource,
     decrementResource,
+    buyResource,
     initData,
     setProgress,
     startAutoProgress,
