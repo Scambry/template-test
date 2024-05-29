@@ -77,9 +77,15 @@ watch(orbsStore.isManual, (newValue) => {
 
 <template>
   <div class="card grid grid-cols-12 h-[80vh] p-4 items-center">
+    <!-- Image -->
+    <div class="col-span-4 flex justify-center items-center md:w-[8rem] md:h-[8rem] w-[4rem] h-[4rem]">
+      <div class="col-span-12 flex-grow flex justify-center items-center w-full h-full">
+        <img class="w-full h-full z-10" src="/assets/art/tile000.png" alt="Border Image">
+        <img class="md:w-[6rem] md:h-[6rem] w-[3rem] h-[3rem] absolute z-20" src="https://picsum.photos/64/64" alt="Inner Image">
+      </div>
+    </div>
     <!-- Progress Bar with Counter and Time -->
-    <div class="col-span-3" />
-    <div class="col-span-6 w-full mb-4">
+    <div class="col-span-4 w-full mb-4">
       <div class="progress-bar-container">
         <div class="progress-bar-fill-wrapper">
           <div
@@ -87,25 +93,20 @@ watch(orbsStore.isManual, (newValue) => {
             :style="{ width: `${orbsStore.progress}%` }"
           />
         </div>
-        <div class="progress-bar-counter">
-          {{ orbsStore.fillCounter }}
-        </div>
         <div class="progress-bar-time">
           {{ orbsStore.tickTimeSeconds }}s / {{ orbsStore.reductionSeconds }}s
         </div>
       </div>
     </div>
-    <div class="col-span-3" />
+
 
     <!-- Manual Mode Checkbox -->
     <div class="col-span-12 flex justify-center mt-4">
       <input id="manualMode" v-model="orbsStore.isManual" type="checkbox">
       <label for="manualMode" class="ml-2">Manual Mode</label>
-
     </div>
     <div class="col-span-12 flex justify-center mt-4">
-      <Button  label="Delete Storage" @click="orbsStore.clearLocalStorage" @touchstart="orbsStore.clearLocalStorage()" />
-
+      <Button label="Delete Storage" @click="orbsStore.clearLocalStorage" @touchstart="orbsStore.clearLocalStorage()" />
     </div>
 
     <!-- Left Resource List -->
