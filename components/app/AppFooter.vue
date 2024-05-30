@@ -8,7 +8,7 @@
   </div>
 </template>
 
-<style lang="scss" scoped>@media (orientation: landscape) {
+<style lang="scss" scoped>@media (orientation: landscape) and (max-width: 1024px){
   .layout-topbar {
     display: none;
   }

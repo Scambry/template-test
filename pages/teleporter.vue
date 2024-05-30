@@ -57,14 +57,11 @@ onMounted(() => {
 
   window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('keyup', handleKeyUp)
-
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyDown)
   window.removeEventListener('keyup', handleKeyUp)
-
-
 })
 
 watch(orbsStore.isManual, (newValue) => {
@@ -83,9 +80,9 @@ watch(orbsStore.isManual, (newValue) => {
     <div class="card grid grid-cols-12 p-4 items-center">
       <!-- Image -->
       <div class="col-span-4 flex justify-center items-center">
-        <div class="relative flex justify-center items-center md:w-32 md:h-32 w-16 h-16">
+        <div class="test relative flex justify-center items-center lg:w-32 lg:h-32 md:w-19 md:h-19 w-14 h-14">
           <img class="w-full h-full z-10" src="/assets/art/tile000.png" alt="Border Image">
-          <img class="absolute md:w-25.5 md:h-25.5 w-12 h-12 z-20" src="https://picsum.photos/64/64" alt="Inner Image">
+          <img class="absolute lg:w-25 lg:h-25 md:w-15 md:h-15 w-12 h-12 w-12 h-12 z-20" src="https://picsum.photos/64/64" alt="Inner Image">
         </div>
       </div>
       <!-- Progress Bar with Counter and Time -->
@@ -93,8 +90,8 @@ watch(orbsStore.isManual, (newValue) => {
         <div class="progress-bar-container">
           <div class="progress-bar-fill-wrapper">
             <div
-                class="progress-bar-fill"
-                :style="{ width: `${orbsStore.progress}%` }"
+              class="progress-bar-fill"
+              :style="{ width: `${orbsStore.progress}%` }"
             />
           </div>
           <div class="progress-bar-time">
@@ -104,9 +101,9 @@ watch(orbsStore.isManual, (newValue) => {
       </div>
       <!-- Image -->
       <div class="col-span-4 flex justify-center items-center">
-        <div class="relative flex justify-center items-center md:w-32 md:h-32 w-16 h-16">
+        <div class="test relative flex justify-center items-center lg:w-32 lg:h-32 md:w-19 md:h-19 w-14 h-14">
           <img class="w-full h-full z-10" src="/assets/art/tile000.png" alt="Border Image">
-          <img class="absolute md:w-25.5 md:h-25.5 w-12 h-12 z-20" src="https://picsum.photos/64/64" alt="Inner Image">
+          <img class="absolute lg:w-25 lg:h-25 md:w-15 md:h-15 w-12 h-12 w-12 h-12 z-20" src="https://picsum.photos/64/64" alt="Inner Image">
         </div>
       </div>
 
@@ -115,16 +112,14 @@ watch(orbsStore.isManual, (newValue) => {
         <input id="manualMode" v-model="orbsStore.isManual" type="checkbox">
         <label for="manualMode" class="ml-2">Manual Mode</label>
       </div>
-      <div class="col-span-12 flex justify-center mt-4">
-        <Button label="Delete Storage" @click="orbsStore.clearLocalStorage" @touchstart="orbsStore.clearLocalStorage()" />
-      </div>
+
 
       <!-- Left Resource List -->
       <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
         <div
-            v-for="resource in orbsStore.dust"
-            :key="resource.id"
-            class="resource-item flex items-center mb-2"
+          v-for="resource in orbsStore.dust"
+          :key="resource.id"
+          class="resource-item flex items-center mb-2"
         >
           <span>{{ resource.count }}</span>
           <span class="mx-2">X</span>
@@ -137,19 +132,19 @@ watch(orbsStore.isManual, (newValue) => {
       <div class="game-container col-span-8 flex justify-center items-center h-full bg-surface-card">
         <div class="sprite-box flex justify-center items-center w-1/2 h-3/5 border-2 border-black">
           <img
-              draggable="false"
-              src="/assets/art/teleport_void.png"
-              alt="Borg Infested Teleporter"
-              class="sprite-image w-4/5 h-4/5 object-contain"
+            draggable="false"
+            src="/assets/art/teleport_void.png"
+            alt="Borg Infested Teleporter"
+            class="sprite-image w-4/5 h-4/5 object-contain pb-5"
           >
         </div>
       </div>
       <!-- Right Resource List -->
       <div class="resource-list col-span-2 flex flex-col justify-center items-center w-full">
         <div
-            v-for="resource in orbsStore.orbs"
-            :key="resource.id"
-            class="resource-item flex items-center mb-2"
+          v-for="resource in orbsStore.orbs"
+          :key="resource.id"
+          class="resource-item flex items-center mb-2"
         >
           <span>{{ resource.count }}</span>
           <span class="mx-2">X</span>
@@ -161,12 +156,12 @@ watch(orbsStore.isManual, (newValue) => {
       <div class="col-span-12 flex justify-center mt-4">
         <div class="button-container">
           <div
-              v-if="orbsStore.isManual"
-              class="button mb-7" :class="[{ 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
-              @mousedown="handleMouseDown"
-              @mouseup="handleMouseUp"
-              @touchstart="handleMouseDown"
-              @touchend="handleMouseUp"
+            v-if="orbsStore.isManual"
+            class="button mb-7" :class="[{ 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
+            @mousedown="handleMouseDown"
+            @mouseup="handleMouseUp"
+            @touchstart="handleMouseDown"
+            @touchend="handleMouseUp"
           />
         </div>
       </div>
@@ -327,26 +322,18 @@ img {
   }
 }
 
-@media (orientation: landscape) {
+@media (orientation: landscape) and (max-width: 1024px){
   .card-wrapper {
-    flex-direction: row; /* Change layout direction to row */
-    padding: 0.5rem; /* Adjust padding for landscape */
-  }
+    flex-direction: row; /* Change layout direction to row */}
   .card {
     width: 80%; /* Set a maximum width */
     height: auto; /* Ensure proper height in landscape */
   }
-  .button-container {
-    width: 128px; /* Keep button size consistent */
-    height: 32px;
+  .button {
+    width: 80px; /* Adjust size for small screens */
+    height: 32px; /* Adjust size for small screens */
+    margin-top: 4rem;
   }
-    .card .col-span-4 img {
-      width: 50%; /* Adjust size for landscape mode */
-      height: 50%; /* Adjust size for landscape mode */
-    }
-  .sprite-box img {
-    width: 50%; /* Adjust size for landscape mode */
-    height: 50%; /* Adjust size for landscape mode */
-  }
+
 }
 </style>
