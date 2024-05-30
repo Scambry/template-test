@@ -58,16 +58,13 @@ onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('keyup', handleKeyUp)
 
-  // Prevent body from scrolling
-  document.body.style.overflow = 'hidden'
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyDown)
   window.removeEventListener('keyup', handleKeyUp)
 
-  // Re-enable body scrolling
-  document.body.style.overflow = ''
+
 })
 
 watch(orbsStore.isManual, (newValue) => {
@@ -165,7 +162,7 @@ watch(orbsStore.isManual, (newValue) => {
         <div class="button-container">
           <div
               v-if="orbsStore.isManual"
-              class="button" :class="[{ 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
+              class="button mb-7" :class="[{ 'press-animate': buttonPressed, 'release-animate': !buttonPressed && buttonAnimating }]"
               @mousedown="handleMouseDown"
               @mouseup="handleMouseUp"
               @touchstart="handleMouseDown"
@@ -187,20 +184,19 @@ watch(orbsStore.isManual, (newValue) => {
   justify-content: center;
   align-items: center;
   position: fixed;
-  top: 5rem; /* Adjust this value based on the height of your topbar */
+  top: 10%; /* Adjust this value based on the height of your topbar */
   left: 0;
   right: 0;
-  bottom: 5rem; /* Adjust to ensure the card doesn't overlap the footer */
-  overflow: hidden;
+  bottom: 10%; /* Adjust to ensure the card doesn't overlap the footer */
   background-color: rgba(0, 0, 0, 0.5); /* Optional: Add a background overlay */
   z-index: 996; /* Ensure this is below the topbar z-index */
   padding: 1rem; /* Add padding for better spacing on smaller screens */
 }
 
 .card {
-  width: 100%; /* Ensure the card takes the full width of the container */
+  width: 80%; /* Ensure the card takes 80% width of the container */
   max-width: 1200px; /* Optionally, set a max-width to prevent it from getting too large */
-  height: calc(100% - 10rem); /* Adjust height to account for topbar and footer */
+  height: 80%; /* Adjust height to 80% of the container */
 }
 
 .progress-bar-container {
@@ -322,18 +318,35 @@ img {
     height: 20px; /* Adjust height for smaller screens */
   }
   .button-container {
-    width: 100px; /* Adjust button size for smaller screens */
-    height: 50px;
+    width: 128px; /* Adjust button size for smaller screens */
+    height: 32px;
+  }
+  .button {
+    width: 64px; /* Adjust size for small screens */
+    height: 32px; /* Adjust size for small screens */
   }
 }
 
-@media (orientation: landscape) and (max-width: 768px) {
+@media (orientation: landscape) {
   .card-wrapper {
-    flex-direction: column; /* Ensure proper layout in landscape mode */
+    flex-direction: row; /* Change layout direction to row */
     padding: 0.5rem; /* Adjust padding for landscape */
   }
   .card {
-    height: calc(100% - 10rem); /* Ensure proper height in landscape */
+    width: 80%; /* Set a maximum width */
+    height: auto; /* Ensure proper height in landscape */
+  }
+  .button-container {
+    width: 128px; /* Keep button size consistent */
+    height: 32px;
+  }
+    .card .col-span-4 img {
+      width: 50%; /* Adjust size for landscape mode */
+      height: 50%; /* Adjust size for landscape mode */
+    }
+  .sprite-box img {
+    width: 50%; /* Adjust size for landscape mode */
+    height: 50%; /* Adjust size for landscape mode */
   }
 }
 </style>

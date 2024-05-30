@@ -8,4 +8,12 @@
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>@media (orientation: landscape) {
+  .layout-topbar {
+    display: none;
+  }
+
+  .layout-footer {
+    display: none;
+  }
+}</style>
